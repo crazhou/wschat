@@ -23,7 +23,7 @@ app.engine('html', function(fileName, options, fn) {
 app.set('view engine', 'html');
 
 // 模板目录
-app.set('views', __dirname + '/public/views');
+app.set('views', __dirname + '/views');
 
 // body parse 中间件
 app.use(express.bodyParser());
