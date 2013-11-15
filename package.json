@@ -1,0 +1,33 @@
+{
+    "name" : "wschat",
+    "description" : "a Chat room base on WebSockets",
+    "version" : "0.0.1",
+    "keywords" : [
+        "ws",
+        "WebSockets",
+        "mongodb",
+        "express",
+        "chatroom"
+    ],
+    "author" : {
+        "name" : "FR",
+        "email" : "crazhou@163.com"
+    },
+
+    "main" : "./server",
+
+    "licenses" : "MIT",
+    
+    "dependencies" : {
+        "express" : "3.0.0",
+        "underscore" : "1.5.1",
+        "mongodb" : "1.3.x",
+        "gm": "1.13.x",
+        "ws": "0.4.x"
+    },
+
+    "repository" : {
+        "type" : "git",
+        "url"  : "https://github.com/crazhou/wschat.git"
+    }
+}

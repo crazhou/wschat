@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+<meta charset="utf-8"/>
+<title>小伙伴即时聊天</title>
+<link type="text/css" href="/css/style.css" rel="stylesheet"/>
+<body>
+    <div class="header">
+        快来和小伙伴们聊天吧，就等你了！
+    </div>
+    <div class="wp">
+    <div class="wp_inner clearfix">
+        <div class="img_cont" title="单击选择头像">
+            <img src="images/head/default.png" width="100" height="100" id="avtar"/>
+        </div>
+        <form action="/join_room" method="post" id="chat_form">
+        <ul class="fl infobox">
+            <li>
+                <label class="em">提示：</label> 单击左边选择头像
+            </li>
+            <li>
+                <label>IP：</label>
+                <input readonly="readonly" value="<%=ip%>" class="inp" name="ip"/>
+            </li>
+            <li>
+                <label for="nickname">昵称：</label>
+                <input class="inp" id="nickname" name="nickname">
+            </li>
+        </ul>
+        <div class="clear"></div>
+        <div class="subbox">
+            <input type="hidden" name="head" id="userhead" class="inp"/>
+            <input type="submit" value="开始聊天" class="butt100" />
+        </div>
+        </form>
+        <!--  图片选择层 -->
+        <div class="outer dsn" id="headSelect">
+          <span class="ico">
+            <span class="ico2"></span>
+          </span>
+          <img src="images/head/101.png"/>
+          <img src="images/head/102.gif"/>
+          <img src="images/head/103.png"/>
+          <img src="images/head/104.png"/>
+          <img src="images/head/105.png"/>
+          <img src="images/head/201.png"/>
+          <img src="images/head/202.png"/>
+          <img src="images/head/203.png"/>
+          <img src="images/head/204.png"/>
+          <img src="images/head/205.png"/>
+        </div>
+    </div>
+    </div>
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/first.js"></script>
+</body>
+</html>

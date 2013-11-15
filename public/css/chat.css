@@ -1,0 +1,392 @@
+body,ul,li,ol,p,div,span,strong,input,textarea,h1,h2,h3,h4,h5,h6 {
+    margin: 0;
+    padding: 0;
+}
+input,textarea {
+    outline: none;
+    font-family: inherit;
+}
+body {
+    color: #333;
+    font-size: 12px;
+    font-family: 'Microsoft Yahei';
+    background : url('../images/blue_glow.jpg') no-repeat 0 0;
+    background-size: cover;
+    overflow: hidden;
+}
+a{
+    color: #08c;
+    text-decoration: none;
+}
+a:hover{
+    text-decoration: underline;
+}
+ul,li {
+    list-style: none;
+}
+.dsn {
+    display: none;
+}
+.clear{
+    clear: both;
+}
+.fl{
+    float: left;
+}
+.fr{
+    float: right;
+}
+.clearfix:after{
+  content: '.';
+  display: block;
+  clear: both;
+  height: 0;
+  overflow: hidden;
+}
+.mE{
+	position: absolute;
+}
+.moveDiv{
+	background: #ccc;
+	height: 300px;
+	width: 300px;
+	border: 1px solid #bbb;
+}
+.fList{
+  height: 760px;
+  width: 260px;
+  background: #DBDBDB;
+  position: absolute;
+  border:1px solid #ccc;
+  border-radius: 5px;
+  top:10px;
+  left: 10px;
+}
+.fList_h{
+  height: 100px;
+  width: 100%;
+  box-shadow: 0px 1px 5px #CCC;
+  border-radius: 5px 5px 0 0;
+  background-image: -webkit-linear-gradient(#ffffff, #f2f2f2 2%, #cecece);
+}
+.fList_h .icon{
+	float: left;
+}
+.fList_h .icon img {
+   height: 70px;
+   width: 70px;
+   border-radius: 5px;
+   margin: 10px;
+   box-shadow: 1px 1px 3px #888;
+}
+.fList_h .text {
+   float: left;
+   margin: 10px 0 0 10px;
+}
+.fList_h .text .name {
+    font-size: 20px;
+}
+.signover {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 150px;
+  white-space: nowrap
+}
+.fList_h .text p{
+	line-height: 1.5;
+	color: #666;
+}
+.fList_h .word{
+	padding: 5px;
+	line-height: 18px;
+	color: #888;
+}
+.fList_list {
+	height: 600px;
+  overflow: auto;
+}
+.fList_list .tips {
+    margin-top: 100px;
+    text-align: center;
+    font-size: 14px;
+    color: #af0f2b;
+}
+.flistA li {
+	padding: 10px;
+	height: 50px;
+	border-top: 1px solid #ececec;
+	border-bottom: 1px solid #c5c5c5;
+    position: relative;
+}
+.flistA .msg_tip {
+    position: absolute;
+    background-color: #b0102c;
+    color: #fff;
+    font-size: 16px;
+    padding: 5px 8px;
+    border-radius: 10px;
+    top:10px;
+    right: 10px;
+}
+.flistA li:last-child{
+	border-bottom: none;
+}
+.flistA li:first-child-child{
+	border-top: none;
+}
+.flistA li img{
+   height: 50px;
+   width: 50px;
+   border-radius: 5px;
+   margin: 0 10px 0 0;
+   box-shadow: 1px 1px 3px #888;
+   float: left;
+}
+
+.flistA li img.offline {
+  -webkit-filter: grayscale(100%); 
+}
+
+.flistA li p{
+	line-height: 20px;
+	color: #666;
+}
+.talk{
+	width: 500px;
+  height: 590px;
+	position: absolute;
+	background: url(../images/bgHGZ.jpg);
+	border-radius: 5px;
+	overflow: hidden;
+	box-shadow:  0px 0px 4px #999;
+	border: 1px solid #fff;
+}
+.talk .omg{
+    margin: 5px 10px 0 0;
+}
+.talk_h{
+	height: 100px;
+	width: 100%;
+  cursor: default;
+	background-image: -webkit-linear-gradient(white, #F2F2F2 2%, #dedede);
+}
+.talk_h .icon{
+	float: left;
+	height: 60px;
+	width: 60px;
+	margin: 10px;
+	border-radius: 5px;
+}
+.talk_h .p{
+  float: left;
+  margin-top: 10px;
+  line-height: 20px;
+}
+.talk_f {
+	width: 100%;
+	height: 330px;
+  overflow: auto;
+}
+.talk_f .msg_cont{
+    font-size: 16px;
+    padding: 0 10px;
+    color: #333;
+}
+.tlistA {
+   line-height: 20px;
+}
+.tlistA li {
+  margin-top: 10px;
+}
+.tlistA li>p{
+	text-indent: 0.5em;
+	color: #6671C2;
+}
+.tlistA li.m>p{
+	color: #C78D36;
+}
+.tlistA li>p span{
+	opacity: 0.88;
+}
+.tlistA li>span {
+	display: block;
+	color: #666;
+}
+.talk_i{
+	background-image: -webkit-linear-gradient(white, #F2F2F2 2%, #dedede);
+	height: 24px;
+}
+.talk_i img{
+    margin: 4px 5px 0;
+}
+.talk_m{
+	height: 100px;
+}
+.talk_m textarea{
+  float: left;
+	height: 90%;
+  width: 100%;
+  float: left;
+	border: none;
+	padding:5px;
+	line-height: 2em;
+  resize :none;
+  overflow: auto;
+}
+.talk_s {
+  height: 32px;
+}
+.talk_s .sendBtn {
+	float: right;
+	margin: 5px 5px 0;
+}
+.buts {
+  float:right;
+  margin: 10px 10px 0 0;
+}
+.buts .bn{
+  width: 23px;
+  height: 23px;
+  display: block;
+  float: left;
+  background: url("../images/icons.png");
+}
+
+.buts .close{
+  margin-left: 5px;
+}
+.buts .close:hover{
+  background-position: -24px 0;
+}
+.buts .max{
+  background-position: 0 -25px;
+}
+.buts .max:hover {
+  background-position: -24px -25px;
+}
+.buts .back{
+  background-position: 0 -50px;
+}
+.buts .back:hover {
+  background-position: -24px -50px;
+}
+
+.notify {
+    font-family: 'Microsoft Yahei';
+    text-align: center;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: rgba(0,0,0,.6);
+    color:#fff;
+    position: absolute;
+    top: 50px;
+    left: 45%;
+    z-index: 100;
+}
+.ftips {
+  margin: 10px 0 0 10px;
+}
+.talk_group {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
+.footer{
+  margin: 20px 10px 0 0;
+}
+.footer a{
+  margin-left: 10px;
+  float: left;
+  text-indent: -9999em;
+  display: block;
+  width: 29px;
+  height: 29px;
+  background: url("../images/settings.png") no-repeat;
+}
+.footer .settings{
+  background-position: 0 -30px;
+}
+/* 弹出层 */
+.fr_box{
+  position: absolute;
+  left: 50%;
+  background-color: #fff;
+  padding: 10px;
+  box-shadow: 0 0 5px rgba(0,0,0,.4);
+  z-index: 100;
+}
+.fr_box .buts{
+  margin: 0;
+}
+.fr_content{
+  margin-top: 10px;
+}
+.fr_footer{
+  margin-top: 10px;
+  border-top: 1px solid #e0e0e0;
+}
+.fr_buts {
+  margin-top: 5px;
+}
+.fr_buts .but{
+  border:none;
+  width: 120px;
+  padding: 10px 0;
+  cursor: pointer;
+  background-color: #e0e0e0;
+  color: #fff;
+}
+.fr_buts .sure{
+  background-color: #48a1dc;
+}
+.set_ul li{
+  margin-top: 10px;
+}
+.set_ul .al{
+  display: inline-block;
+  width: 6em;
+  color: #333;
+  text-align: right;
+}
+.set_ul .al:after{
+  content: '：';
+}
+.set_ul textarea{
+  vertical-align: top;
+  width: 60%;
+  resize:none;
+  padding: 2px;
+}
+.inp {
+  width: 150px;
+  padding: 2px;
+}
+/* 图片上传样式 */
+.img_conts{
+  margin-top: 10px;
+}
+.img_buts .but {
+  border : none;
+  width: 80px;
+  padding: 5px 0;
+  cursor: pointer;
+  background-color: #48a1dc;
+  color: #fff;
+}
+.img_preview{
+  margin-left: 20px;
+}
+.img_back {
+  width: 80%;
+}
+.img_back img {
+  float: left;
+  cursor: pointer;
+  margin: 10px 10px 0 0;
+}
+.img_inner {
+  background-color: #f0f0f0;
+  width: 80%;
+  height: 500px;
+}

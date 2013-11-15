@@ -1,0 +1,137 @@
+html,body,div,form,input,textarea,ul,li,h1,h2,h3,h4,h5,h6{
+    margin: 0;
+    padding: 0;
+}
+body {
+    font-family: 'Arial', 'Microsoft Yahei';
+    font-size: 14px;
+    color: #333;
+}
+input,textarea {
+    outline: none;
+    font-family: inherit;
+}
+ul, li{
+    list-style: none;
+}
+.dsn{
+    display: none;
+}
+.fl{
+    float: left;
+}
+.fr{
+    float: right;
+}
+.clear {
+    clear: both;
+}
+.clearfix {
+    zoom: 1;
+}
+.clearfix:after {
+    content: '.';
+    display: block;
+    clear: both;
+    height: 0;
+}
+.header {
+    height: 100px;
+    background-color: #af102c;
+    color: #fff;
+    text-align: center;
+    font-size: 50px;
+    line-height: 2;
+}
+.wp {
+    background-color: #f1f1f1;
+    border-top: 1px solid #ccc;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top:100px;
+}
+.wp_inner {
+    width: 500px;
+    margin: 50px auto 0;
+    padding: 10px;
+    position: relative;
+    background-color: #fff;
+}
+.img_cont {
+    float: left;
+    padding: 5px;
+    cursor: pointer;
+    background-color: #fff;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 4px rgba(0,0,0,.2);
+}
+.img_cont img {
+    float: left;
+}
+.em {
+    color: #af102c;
+}
+.infobox {
+    margin-left: 40px;
+}
+.infobox li {
+    margin-top: 10px;
+}
+.infobox label {
+    display: inline-block;
+    width: 50px;
+}
+.inp {
+    border: 1px solid #ccc;
+    width: 285px;
+    padding: 5px 2px;
+}
+.subbox{
+    margin-top: 20px;
+    text-align: center
+}
+.subbox .butt100 {
+    cursor: pointer;
+    width: 100%;
+    height: 80px;
+    border: none;
+    background-color: #9f001c;
+    font-size: 20px;
+    color: #fff;
+}
+.subbox .butt100:hover {
+    background-color: #af102c;
+}
+.outer {
+    border:1px solid #ccc; 
+    width:500px;
+    padding: 10px;
+    position: absolute;
+    background-color: #fff;
+    top: 10px;
+    left: 135px;
+    box-shadow: 1px 1px 5px rgba(0,0,0,.2);
+}
+.outer img {
+    float: left;
+    cursor: pointer;
+}
+.ico,.ico2 {
+    border-bottom:10px solid transparent; 
+    border-top:10px solid transparent; 
+    border-right:10px solid #ccc;
+    display: inline-block;
+    position: absolute;
+    left: -10px;
+    top: 40px;
+}
+.ico2 {
+    border-right:10px solid #fff;
+    display: inline-block;
+    position: absolute;
+    top: -10px;
+    left: 2px;
+}

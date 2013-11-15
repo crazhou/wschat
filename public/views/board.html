@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>小伙伴聊天系统</title>
+    <link rel="stylesheet" type="text/css" href="/css/chat.css"/>
+    <script type="text/javascript">
+      var Current_user = <%print(JSON.stringify(obj))%>;
+    </script>
+</head>
+<body>
+<span class="notify dsn"></span>
+ <div class="fList" id="fList">
+    <div class="fList_h" id="fList_h">
+       <div class="icon" data-id="<%=_id%>" id="avtar">
+        <a href="javascript:;" title="修改头像" class="fr">
+           <img src="<%=head%>" class="fr">
+        </a>
+       </div>
+       <div class="text">
+           <p class="name"><%=nickname%></p>
+           <p class="signover" title="<%=signtrue%>"><%=signtrue%></p>
+       </div>
+    </div>
+    <div class="fList_list" id="fList_list"></div>
+    <div class="footer fr">
+        <a href="javascript:;" class="start_chat" title="发起聊天">发起聊天</a>
+        <a href="javascript:;" class="settings" title="设置">设置</a>
+    </div>
+</div>
+<input type="file" id="upload_hidden" class="dsn" />
+<div id="temp_cont"></div>
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/underscore-min.js"></script>
+<script type="text/javascript" src="js/frwin.js"></script>
+<script type="text/javascript" src="js/m.js"></script>
+<script type="text/javascript" src="js/init.js"></script>
+</body>
+</html>

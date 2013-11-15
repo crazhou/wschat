@@ -1,0 +1,136 @@
+ <!-- 好友列表模板 -->
+ <script type="text/template" id="main_List">
+      <ul class="flistA">
+      <%if(fList.length > 0 ) { _.each(fList, function(e,i,o){ %>
+          <li data-id="<%=e._id%>">
+              <img src="<%=e.head%>" data-status="<%=e.status%>" class="<%=e.status===1?'':'offline'%>"/>
+              <p><%=e.nickname%></p>
+              <p class="signover" title="<%=e.signtrue%>"><%=e.signtrue%></p>
+              <strong class="msg_tip dsn" id="T<%=e._id%>"></strong>
+          </li>
+          <%})}%>
+      </ul>
+ </script>
+ <!-- 聊天窗口模板 -->
+ <script type="text/template" id="chat_box">
+<div class="talk" id="A<%=_id%>" data-id="<%=_id%>">
+   <div class="talk_h" id="A_H<%=_id%>">
+     <div class="buts">
+        <a href="javascript:;" class="bn max"></a>
+        <a href="javascript:;" class="bn close"></a>
+     </div>
+     <img class="icon" src="<%=head%>">
+     <div class="p">      
+       <h2><%=nickname%></h2>
+       <p><%=signtrue%></p>
+     </div>
+   </div>
+   <div class="talk_f">
+     <ul class="tlistA"></ul>
+   </div>
+   <div class="talk_group">
+   <div class="talk_i">
+   <a href="javascript:;" class="fl"><img src="/images/icon_i.png"></a>
+    <a href="javascript:;" class="fl up"><img src="/images/icon_i0.png"></a>
+    <a href="javascript:;" class="fr omg">清屏</a>
+   </div>
+   <div class="talk_m">
+     <textarea class="readySend" autofocus></textarea>
+   </div>
+   <div class="talk_s">
+     <span class="fl ftips">提示：在设置中修改发送快捷键</span>
+     <a href="javascript:;" class="sendBtn">
+        <img src="/images/icon_send.png"/>
+     </a>
+    </div>
+     </div>
+ </div>
+ </script>
+<!--  单条消息模板 -->
+ <script type="text/template" id="chat_one">
+ <%_.each(obj, function(e,i,o){ %>
+  <li<%=e.is_self?'':' class="m"'%>>
+  <p><%=e.nickname%>: <span><%=e.time%></span></p>
+  <span class="msg_cont">
+  <%if(e.type ==='text'){%>
+    <%=e.content%>
+  <% } else {%>
+    <img src="<%=e.content%>">
+  <%}%></span>
+  </li>
+  <%})%>
+</script>
+<!-- 窗口模板 -->
+<script type="text/template" id="fr_box">
+  <div class="fr_box">
+    <div class="fr_title clearfix">
+      <h2 class="fl"><%=title%></h2>
+      <div class="buts">
+        <a href="javascript:;" class="bn close"></a>
+      </div>
+    </div>
+    <div class="fr_content"></div>
+    <div class="fr_footer">
+      <div class="fr_buts fr">
+      <input type="button" value="确定" class="but sure"/>
+      <input type="button" value="取消" class="but cancel"/>
+      </div>
+    </div>
+  </div>
+</script>
+<!-- 设置模板-->
+<script type="text/template" id="tpl_settings">
+    <form id="setting_form">
+  <ul id="setting_ul" class="set_ul">
+  <li>
+    <label for="nickname" class="al">昵称</label>
+    <input id="nickname" name="nickname" class="inp" maxlength="8" value="<%=nickname%>"/>
+  </li>
+  <li>
+      <label for="signtrue" class="al">签名</label>
+      <textarea id="signtrue" name="signtrue"><%=signtrue%></textarea>
+  </li>
+  <li>
+    <label for="mainboard_set" class="al">主面板位置</label>
+    <input type="radio" name="mainboard_set" id="rtmp1" value="left" <%=settings.mainboard_set==='left'?'checked':''%>/>
+    <label for="rtmp1">左边</label>
+    <input type="radio" name="mainboard_set" id="rtmp2" value="right" <%=settings.mainboard_set==='right'?'checked':''%>/>
+    <label for="rtmp2">右边</label>
+  </li>
+  <li>
+  <label for="send_shortcut" class="al">发送快捷键</label>
+    <input type="radio" name="send_shortcut" id="rtmp3" value="1" <%=settings.send_shortcut===1?'checked':''%>/>
+    <label for="rtmp3">Ctrl+Enter</label>
+    <input type="radio" name="send_shortcut" id="rtmp4" value="2" <%=settings.send_shortcut===2?'checked':''%>/>
+    <label for="rtmp4">Enter</label>
+    <input type="hidden" name="ip" value="<%=ip%>"/>
+  </li>
+  </ul>
+    </form>
+</script>
+<!-- 修改图像弹层 -->
+<script type="text/template" id="tpl_upload">
+<div class="img_buts clearfix">
+  <input class="but sysimg" type="button" value="系统头像" data-tabs="img_back"/>
+  <input class="but uploadimg" type="button" value="本地上传" data-tabs="img_inner"/>
+</div>
+<div class="img_conts clearfix">
+  <div class="img_inner fl dsn">
+  </div>
+  <div class="img_back fl">
+        <img src="images/head/101.png"/>
+        <img src="images/head/102.gif"/>
+        <img src="images/head/103.png"/>
+        <img src="images/head/104.png"/>
+        <img src="images/head/105.png"/>
+        <img src="images/head/201.png"/>
+        <img src="images/head/202.png"/>
+        <img src="images/head/203.png"/>
+        <img src="images/head/204.png"/>
+        <img src="images/head/205.png"/>
+  </div>
+  <div class="img_preview fl">
+    <img src="<%=head%>" id="preview"/>
+  </div>
+</div>
+</script>
