@@ -251,7 +251,7 @@ $(function(J) {
     (function(C) {
 
          // 建立WebSocket 连接 
-        var handle = new WebSocket('ws://iqsz-d0312:8007');
+        var handle = new WebSocket('ws://localhost:8007');
 
         handle.onclose = function() {
             C.close_cb();

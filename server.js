@@ -42,14 +42,15 @@ app.get('/', function(req, res) {
     });
 });
 
-// 用户存入数据库
+// 用户存入数据库 
 app.post('/join_room', function(req, res) {
     var input = req.body,
         ip    = req.ip;
     // 数据准备 
     _.extend(input, {
         signtrue :'欢迎加入我们！',
-        status : 1
+        status : 1,
+        settings : {mainboard_set : 'left', send_shortcut : 1}
     });
 
     // 防止重复插入
