@@ -2,6 +2,9 @@ body,ul,li,ol,p,div,span,strong,input,textarea,h1,h2,h3,h4,h5,h6 {
     margin: 0;
     padding: 0;
 }
+img{
+  border: none;
+}
 input,textarea {
     outline: none;
     font-family: inherit;
