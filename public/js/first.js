@@ -21,7 +21,7 @@ $(document).ready(function(J){
     });
 
     // 表单提示事件
-    var form = $('#chat_form').on('submit', function(ev){
+    var form = $('#chat_form').on('submit', function(ev) {
 
         var inputs = form.find('input.inp'),
             messages = {

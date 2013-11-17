@@ -24,7 +24,9 @@
         $(body).append(html);
 
         // 窗口主体
-        this.$win = $('.fr_box').attr('id', _.uniqueId('win_'))
+        var _id = _.uniqueId('win_');
+        $('.fr_box:last').attr('id', _id);
+        this.$win = $('#' + _id)
                     .width(opts.width)
                     .css({'margin-left': opts.width/-2, 'top' : opts.top});
         // 窗口内容区域
@@ -40,15 +42,21 @@
 
     $.extend(FrWin.prototype, {
         'open' : function(html, fn) {
-            this.$cont.append(html);
-            fn&&fn(this.$cont);
+            this.$cont.html(html);
+            this.$win.removeClass('dsn');
+            fn&&this.opened===undefined&&fn(this.$cont);
             opts.onopen(this.$cont);
+
+            // 窗口已经打开 
+            this.opened = true;
         },
 
         'close' : function(fn) {
-            this.$win.remove();
+            this.$win.addClass('dsn');
             fn&&fn(this.$cont);
             opts.onclose(this.$cont);
+
+            this.opened = false;
         }
     });
 

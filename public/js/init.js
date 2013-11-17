@@ -75,6 +75,22 @@ $(function(J) {
       'oldtitle' : document.title
     };
 
+    /**
+     * 载入模板
+     */
+    var Defer = (function(){
+      return $.get('template.html', function(text) {
+        $('#temp_cont').html(text);
+      }, 'html');
+    })();
+
+    Defer.done(function(text, status) {
+          ChatObj.renderFlist = _.template($('#main_List').html());
+          ChatObj.renderMsg = _.template($('#chat_one').html());
+          ChatObj.renderWindow = _.template($('#fr_box').html());
+          ChatObj.renderSettings = _.template($('#tpl_settings').html());
+          ChatObj.renderUpload = _.template($('#tpl_upload').html());
+    });
      /*
       * 渲染好友列表
       * @data 用户数组 
@@ -104,22 +120,9 @@ $(function(J) {
             }
         });
 
-
-        if(ChatObj.renderFlist) {
-            return fList.html(ChatObj.renderFlist({fList:tmp}));
-        }
-
-        // 载入模板
-         $('#temp_cont').load('template.html', function(responseText, textStatus) {
-                
-                ChatObj.renderFlist = _.template($('#main_List').html());
-                ChatObj.renderMsg = _.template($('#chat_one').html());
-                ChatObj.renderWindow = _.template($('#fr_box').html());
-                ChatObj.renderSettings = _.template($('#tpl_settings').html());
-                ChatObj.renderUpload = _.template($('#tpl_upload').html());
-
-                fList.html(ChatObj.renderFlist({fList:tmp}));
-         });
+        Defer.done(function(){
+          fList.html(ChatObj.renderFlist({fList:tmp}));
+        });
      }
 
      /*
@@ -459,89 +462,67 @@ $(function(J) {
         if(!show)
           Titletip.stop();
     });
+    // 两个窗口
+    var win1, win2;
 
-    // 设置代码
-    $('.settings').on('click', function(e) {
-      // 按钮
-      var but = $(this);
+    Defer.done(function(text, status) {
+      // 设置窗口
+       win1 = new FrWin(ChatObj.renderWindow({title:'设置'}), {
+        'onok' : function(win) {
+            var form = win.find('#setting_form'),
+                nickname = form.find('#nickname'),
+                v = $.trim(nickname.val());
 
-      if(but.data('opened')) return false;
-      // 获取窗口HTML
-      var html = ChatObj.renderWindow({title:'设置'}),
-      // 初始化窗口
-          win1 = new FrWin(html, {
-            'onok' : function(win) {
-                var form = win.find('#setting_form'),
-                    nickname = form.find('#nickname'),
-                    v = $.trim(nickname.val());
-
-                if(v === '') {
-                  notify('昵称不能为空！');
-                  return false;
-                }
-
-                var data = form.serialize();
-
-                $.post('/update_user', data, function(resp) {
-                    if(resp.success) {
-                      notify('修改成功，正在刷新页面...');
-                      win1.close();
-                      setTimeout(function(){
-                        location.reload();
-                      }, 1000);
-                    }
-                }, 'json');
-
-            },
-            'onclose' : function() {
-              but.data('opened', false);
+            if(v === '') {
+              notify('昵称不能为空！');
+              return false;
             }
-          }),
-          cont = ChatObj.renderSettings(ChatObj.user);
-          win1.open(cont, function() {
-              but.data('opened', true);
-          });
+
+            var data = form.serialize();
+
+            $.post('/update_user', data, function(resp) {
+                if(resp.success) {
+                  notify('修改成功，正在刷新页面...');
+                  win1.close();
+                  setTimeout(function(){
+                    location.reload();
+                  }, 1000);
+                }
+            }, 'json');
+          }
+        });
+       // 修改头像窗口
+       win2 = new FrWin(ChatObj.renderWindow({title:'修改头像'}), {
+            'width' : 800,
+            'top'  : 80
+        });
+    });
+
+    $('.settings').on('click', function(e) {
+          var cont = ChatObj.renderSettings(ChatObj.user);
+          win1.open(cont);
     });
 
     // 设置头像
-    $('#avtar').on('click', function(e){
-      // 按钮
-      var but = $(this);
-
-      if(but.data('opened')) return false;
-
-      // 获取窗口HTML
-      var html = ChatObj.renderWindow({title:'修改头像'}),
-
-          win2 = new FrWin(html, {
-              'width' : 800,
-              'top'  : 80,
-              'onclose' : function() {
-                but.data('opened', false);
-              }
-          }),
-
-          cont = ChatObj.renderUpload(ChatObj.user);
+    $('#avtar').on('click', function(e) {
+          // 窗口内容
+          var cont = ChatObj.renderUpload(ChatObj.user);
 
           win2.open(cont, function(w) {
-
-            but.data('opened', true);
             // 选项卡
-            var tabs = w.find('.img_back,.img_inner'),
-                img = w.find('#preview'),
-                input_hidden = $('#upload_hidden');
-            // 选项卡切换
-            w.on('click', '.but', function(e){
-                var index = $(this).index();
+            var input_hidden = $('#upload_hidden');
+            w.on('click', '.but', function(e) {
+                var index = $(this).index(),
+                    tabs = w.find('.img_back,.img_inner');
                 tabs.addClass('dsn').eq(1-index).removeClass('dsn');
-
                 if(index) {
                   input_hidden.click();
                 }
             });
             // 选择系统图片
-            w.on('click', '.img_back', function(e){
-              var target = $(e.target);
+            w.on('click', '.img_back', function(e) {
+              var target = $(e.target),
+                img = w.find('#preview');
                 if(target.is('img')) {
                   var url = target.attr('src');
                   img.attr('src', url);
