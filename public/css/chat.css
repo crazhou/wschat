@@ -404,6 +404,7 @@ ul,li {
 }
 .img_inner {
   background-color: #f0f0f0;
+  overflow: hidden;
   width: 80%;
   height: 500px;
 }

@@ -5,7 +5,7 @@ $(function(J) {
 
     // 主面板拖动
     var mainboard = new Drag('fList', 'fList_h'),
-        wshost    = 'ws://iqsz-d0312:8007';
+        wshost    = 'ws://192.168.5.100:8007';
 
     /*
      * 获取主面板初始位置
@@ -641,7 +641,7 @@ $(function(J) {
                               fileObj = file;
                               return false;
                           }
-                          if(obj.width <= 640 && obj.height <= 500) {
+                          //if(obj.width <= 640 && obj.height <= 500) {
                               if(obj.width > 100 && obj.height > 100) {
                                 fileObj = file;
                                 img_inner.html(img);
@@ -650,9 +650,9 @@ $(function(J) {
                               } else {
                                 notify('图片尺寸过小,最小尺寸100 X 100 px！');
                               }
-                          } else {
-                            notify('图片尺寸过大,最大尺寸640 X 500 px！');
-                          }
+                        //  } else {
+                        //    notify('图片尺寸过大,最大尺寸640 X 500 px！');
+                        //  }
                       });
                   });
                 }
