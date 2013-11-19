@@ -4,7 +4,8 @@ $(function(J) {
     }
 
     // 主面板拖动
-    var mainboard = new Drag('fList', 'fList_h');
+    var mainboard = new Drag('fList', 'fList_h'),
+        wshost    = 'ws://iqsz-d0312:8007';
 
     /*
      * 获取主面板初始位置
@@ -22,7 +23,6 @@ $(function(J) {
           left : 'auto'
         }
       };
-
       return im[ChatObj.user.settings.mainboard_set];
     }
 
@@ -166,11 +166,14 @@ $(function(J) {
      };
 
      /* 
-      * 发送图片
-      * @id 目标用户id
+      * readImg 读取图片
       * @file 文件对象
+      * @fn callback (base64编码)
       */
-     function sendImg(id, file) {
+     function readImg(file, fn) {
+        if(file === undefined) {
+          return false;
+        }
         var ext = file.name.split('.').pop().toLowerCase();
         if(_.indexOf(['jpg','jpeg','png','gif'], ext) < 0) {
             return notify('非法的文件类型，请选择图片!');
@@ -181,11 +184,30 @@ $(function(J) {
         var reader = new FileReader();
         reader.readAsDataURL(file);
         reader.onloadend = function() {
-            var result = this.result;
-            // 发送图片
-            ChatObj.send(id, result, 'img');
+            fn && fn(this.result);
         }
+
+        return file;
      }
+     /* 获取图片尺寸
+      * @file 文件对象
+      * @fn callback (url, {with: xx, height: xx})
+      * @return img Element
+      */
+      function imgSize(file, fn) {
+        if(window.URL) {
+            var url = URL.createObjectURL(file),
+                img = new Image();
+                img.src = url;
+                img.onload = function() {
+                  fn&&fn(url, {width : this.width, height : this.height});
+                };
+
+                return img;
+        } else {
+          throw Error('window.URL对象不存在！');
+        }
+      }
      /** 匹配网址
       * content
       */
@@ -254,7 +276,7 @@ $(function(J) {
     (function(C) {
 
          // 建立WebSocket 连接 
-        var handle = new WebSocket('ws://localhost:8007');
+        var handle = new WebSocket(wshost);
 
         handle.onclose = function() {
             C.close_cb();
@@ -333,8 +355,8 @@ $(function(J) {
 
      })(ChatObj);
 
+     // 决定窗口打开的位置
      var deviWin = function() {
-         // 窗口初始参数 
          var winInfo = {
             top: 10,
             left : 350,
@@ -348,16 +370,14 @@ $(function(J) {
         talk.each(function(i,e) {
             var p = $(this).position();
             if(winInfo.top === p.top && winInfo.left === p.left) {
-                change = true;
-                return false;
+                winInfo.top += 20;
+                winInfo.left += 20;
+            } else {
+              return false;
             }
         });
 
-        if(change) {
-            winInfo.top += 20;
-            winInfo.left += 20;
-            winInfo['z-index'] = index++;
-        }
+        winInfo['z-index'] = index++;
         return winInfo;
      };
 
@@ -437,7 +457,9 @@ $(function(J) {
                         // 上传图片
                         win.find('.up').on('click', function(e) {
                             $('#upload_hidden').click().off('change').on('change', function(e){
-                                sendImg(id, this.files[0]);
+                                readImg(this.files[0], function(result) {
+                                    ChatObj.send(id, result, 'img')
+                                });
                             });
                         });
                     }
@@ -460,10 +482,64 @@ $(function(J) {
     $(document).on('webkitvisibilitychange', function(e) {
         var show = Titletip.enabled = this.webkitHidden;
         if(!show)
-          Titletip.stop();
+          setTimeout(function() {
+             Titletip.stop();
+          }, 1500);
     });
-    // 两个窗口
-    var win1, win2;
+
+    // 两个窗口, 和文件对象, tab标记
+    var win1, win2, fileObj, tabFlag = 0;
+
+
+    // 关闭弹出层，并重新加载页面
+    function close_reload (win) {
+        notify('修改成功，正在刷新页面...');
+        win.close();
+        setTimeout(function(){location.reload();}, 1000);
+    }
+
+    // 设置系统内头像
+    function update_avtar (data, fn) {
+        $.post('/update_avtar', data, function(data) {
+            if(data.success) {
+              fn && fn();
+            } else {
+              throw Error('更新失败！');
+            }
+        }, 'json');
+    }
+
+    /*上传文件并设置头像
+     * @file 文件对象
+     * @coor 坐标参数
+     * @ip   用户IP
+     * @fn   回调函数
+     */
+    function upload_avtar(file, coor, ip,  fn) {
+      var data = new FormData();
+          data.append('avtar', file);
+          data.append('ip', ip);
+          data.append('coor', coor);
+
+        $.ajax('/upload_avtar', {
+          'type' : 'POST', 
+          'data' : data,
+          'timeout' : 5000,
+          'contentType' : false,
+          'processData' : false, 
+          'dataType' :'json',
+          'success' : function(data, statusText) {
+                if(!data.success) {
+                  notify(data.msg);
+                } else {
+                  close_reload(win1);
+                }
+          },
+          'error' : function(jqXHR, textStatus, error) {
+            console.log('请求发生错误 : textStatus : %s Error : %s', textStatus, error);
+          }
+        });
+    }
 
     Defer.done(function(text, status) {
       // 设置窗口
@@ -482,11 +558,7 @@ $(function(J) {
 
             $.post('/update_user', data, function(resp) {
                 if(resp.success) {
-                  notify('修改成功，正在刷新页面...');
-                  win1.close();
-                  setTimeout(function(){
-                    location.reload();
-                  }, 1000);
+                  close_reload(win1);
                 }
             }, 'json');
           }
@@ -494,10 +566,44 @@ $(function(J) {
        // 修改头像窗口
        win2 = new FrWin(ChatObj.renderWindow({title:'修改头像'}), {
             'width' : 800,
-            'top'  : 80
+            'top'  : 80,
+            'onok' : function(win) {
+                var coor = win.find('#coor_hidden').val(),
+                    headimg = win.find('#head_hidden').val();
+
+                // 设置系统头像
+                if(!tabFlag) {
+                  if(headimg === ChatObj.user.head.slice(-7)) {
+                      notify('头像末修改！');
+                      return true;
+                  }
+                  if( headimg === '') {
+                    return notify('请选择头像！');
+                  }
+                  // 直接设置头像
+                  if( headimg.length > 0) {
+                      update_avtar({head: headimg, ip: ChatObj.user.ip}, function(){
+                        close_reload(win2);
+                      });
+                  }
+                }
+                // 需要上传的逻辑
+                if(tabFlag) {
+                   if(fileObj === undefined) {
+                      return notify('请先选择图片！');
+                   }
+                   if(fileObj && !coor) {
+                      return notify('请设置剪裁区域!');
+                   }
+                   if(fileObj && coor.length > 0) {
+                      upload_avtar(fileObj, coor, ChatObj.user.ip);
+                   }
+                }
+            }
         });
     });
 
+    // 修改昵称，签名和设置
     $('.settings').on('click', function(e) {
           var cont = ChatObj.renderSettings(ChatObj.user);
           win1.open(cont);
@@ -510,13 +616,45 @@ $(function(J) {
 
           win2.open(cont, function(w) {
             // 选项卡
-            var input_hidden = $('#upload_hidden');
+            var input_hidden = $('#upload_hidden'),
+                head_hidden = $('#head_hidden');
             w.on('click', '.but', function(e) {
-                var index = $(this).index(),
-                    tabs = w.find('.img_back,.img_inner');
+                var index = tabFlag = $(this).index(),
+                    tabs = w.find('.img_back,.img_inner'),
+                    img_inner = tabs.eq(0),
+                    img_preview = w.find('#preview').removeAttr('style'),
+                    img_tips = w.find('.img_tips');
+
                 tabs.addClass('dsn').eq(1-index).removeClass('dsn');
                 if(index) {
-                  input_hidden.click();
+                  head_hidden.val('');
+                  input_hidden
+                  .off('change')
+                  .click()
+                  .on('change', function(e) {
+                      var file = readImg(this.files[0]),
+                      img = imgSize(file, function(url, obj) {
+                          if(obj.width === 100 && obj.height === 100) {
+                              img_preview.attr('src', url);
+                              $('#coor_hidden').val('0|0|100|100');
+                              notify('图片为标准尺寸，无需裁剪');
+                              fileObj = file;
+                              return false;
+                          }
+                          if(obj.width <= 640 && obj.height <= 500) {
+                              if(obj.width > 100 && obj.height > 100) {
+                                fileObj = file;
+                                img_inner.html(img);
+                                img_preview.attr('src', url);
+                                CorpHelper(img,img_preview,obj,url);
+                              } else {
+                                notify('图片尺寸过小,最小尺寸100 X 100 px！');
+                              }
+                          } else {
+                            notify('图片尺寸过大,最大尺寸640 X 500 px！');
+                          }
+                      });
+                  });
                 }
             });
             // 选择系统图片
@@ -526,8 +664,49 @@ $(function(J) {
                 if(target.is('img')) {
                   var url = target.attr('src');
                   img.attr('src', url);
+                  head_hidden.val(url.slice(-7));
                 }
             });
           });
     });
+
+    /**
+     * 图片裁剪器
+     * @el DOM元素
+     * @pre 预览元素jQuery 对象
+     * @url 原图URL
+     */
+    function CorpHelper(el,pre,obj,url) {
+      var api = false,
+          coor_hidden = $('#coor_hidden'),
+          updatePreview = function(c) {
+            if(pre.attr('src') !== url) {
+              pre.attr('src' , url);
+            }
+            if (parseInt(c.w) > 0) {
+              var rx = 100 / c.w;
+              var ry = 100 / c.h;
+              pre.css({
+                width: Math.round(rx * obj.width) + 'px',
+                height: Math.round(ry * obj.height) + 'px',
+                left: '-' + Math.round(rx * c.x) + 'px',
+                top: '-' + Math.round(ry * c.y) + 'px'
+              });
+              coor_hidden.val([c.x,c.y,c.w,c.h].join('|'));
+            }
+          },
+          release = function () {
+            coor_hidden.val('');
+          };
+      $(el).Jcrop({
+        onChange : updatePreview,
+        onSelect : updatePreview,
+        aspectRatio : 1,
+        onRelease : release,
+        minSize: [100,100]
+      }, function() {
+        api = this;
+        this.setSelect([0,0,100,100]);
+      });
+    }
 });

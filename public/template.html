@@ -116,6 +116,7 @@
 </div>
 <div class="img_conts clearfix">
   <div class="img_inner fl dsn">
+      <div class="img_tips">请先上传图片，最大尺寸640 X 500 px,最小尺寸100 X 100 px</div>
   </div>
   <div class="img_back fl">
         <img src="images/head/101.png"/>
@@ -130,7 +131,11 @@
         <img src="images/head/205.png"/>
   </div>
   <div class="img_preview fl">
-    <img src="<%=head%>" id="preview"/>
+    <div class="img_preinner">
+      <img src="<%=head%>" id="preview"/>
+    </div>
   </div>
+  <input type="hidden" name="coor" id="coor_hidden"/>
+  <input type="hidden" name="headimg" id="head_hidden" value="<%=head.slice(-7)%>"/>
 </div>
 </script>

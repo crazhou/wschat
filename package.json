@@ -1,33 +1,42 @@
 {
-    "name" : "wschat",
-    "description" : "a Chat room base on WebSockets",
-    "version" : "0.0.1",
-    "keywords" : [
-        "ws",
-        "WebSockets",
-        "mongodb",
-        "express",
-        "chatroom"
-    ],
-    "author" : {
-        "name" : "FR",
-        "email" : "crazhou@163.com"
-    },
-
-    "main" : "./server",
-
-    "licenses" : "MIT",
-    
-    "dependencies" : {
-        "express" : "3.0.0",
-        "underscore" : "1.5.1",
-        "mongodb" : "1.3.x",
-        "gm": "1.13.x",
-        "ws": "0.4.x"
-    },
-
-    "repository" : {
-        "type" : "git",
-        "url"  : "https://github.com/crazhou/wschat.git"
-    }
+  "name": "wschat",
+  "description": "a Chat room base on WebSockets",
+  "version": "0.0.1",
+  "keywords": [
+    "ws",
+    "WebSockets",
+    "mongodb",
+    "express",
+    "chatroom"
+  ],
+  "author": {
+    "name": "FR",
+    "email": "crazhou@163.com"
+  },
+  "main": "./server",
+  "licenses": "MIT",
+  "dependencies": {
+    "express": "3.0.0",
+    "underscore": "1.5.1",
+    "mongodb": "1.3.x",
+    "gm": "1.13.x",
+    "ws": "0.4.x"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/crazhou/wschat.git"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "readme": "wschat\n======\n\nA LAN ChatRoom Base on Nodejs use mongo,WebSocket!\n\n请勿用于商业目的，一切后果与作者无关！ \n",
+  "readmeFilename": "README.md",
+  "bugs": {
+    "url": "https://github.com/crazhou/wschat/issues"
+  },
+  "_id": "wschat@0.0.1",
+  "dist": {
+    "shasum": "cfb2b3878f64b23f52fbb61184c2565b079db2a7"
+  },
+  "_from": "./wschat"
 }

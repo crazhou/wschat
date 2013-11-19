@@ -2,7 +2,8 @@ var express = require('express'),
     _       = require('underscore'),
     fs      = require('fs'),
     ws      = require('./ws'),
-    db      = require('./mongo');
+    db      = require('./mongo'),
+    crop    = require('./crop');
 
 var app = express();
 
@@ -26,7 +27,7 @@ app.set('view engine', 'html');
 app.set('views', __dirname + '/views');
 
 // body parse 中间件
-app.use(express.bodyParser());
+app.use(express.bodyParser({ keepExtensions: true, uploadDir: 'D:/NewWorks/tmp' }));
 
 // 日志记录器
 app.use(express.logger());
@@ -61,7 +62,6 @@ app.post('/join_room', function(req, res) {
            db.addUser(input, function(data) {
                 ws.updateDB();
                 res.render('board', Process_data(data[0]));
-            
             });
         }
     });
@@ -105,6 +105,44 @@ app.post('/update_user', function(req, res) {
                 ws.updateDB();
             }
         });
+});
+
+// 更新用户头像
+app.post('/update_avtar', function(req, res){
+    var input = req.body,
+        head  = input.head;
+    if(req.xhr) {
+        db.updateUser(input.ip, {head : head}, function(data) {
+            if(data) {
+                res.send({'success': data});
+                ws.updateDB();
+            }
+        });
+    }
+
+});
+
+// 上传头像
+app.post('/upload_avtar', function(req, res) {
+    var file = req.files.avtar,
+        body = req.body;
+
+    // 裁剪图片
+    crop.cropImg(file.path, body.coor, _.uniqueId('head_'), function(data) {
+        if(data.success) {
+            // 移动文件
+            fs.renameSync(data.fileName, __dirname + '/public/images/head/' + data.fileName);
+            // 更新用户头像
+            db.updateUser(body.ip, {head :data.fileName}, function(resp) {
+                if(resp) {
+                    res.send({'success': data});
+                    ws.updateDB();
+                }
+            });
+        } else {
+            res.send(data);
+        }
+    });
 });
 
 

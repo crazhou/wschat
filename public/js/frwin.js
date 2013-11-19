@@ -5,18 +5,15 @@
  */
  (function(w, u) {
     var d    = w.document,
-        body = d.body, 
-        opts = null;
+        body = d.body;
 
     function FrWin (html, opt) {
         
         var _this = this;
 
         // 覆盖默认参数 
-        opts = $.extend({
+        var opts = $.extend({
             onclose: $.noop,
-            onopen : $.noop,
-            onok   : $.noop,
             width : 600,
             top : 150
         }, opt);
@@ -29,13 +26,14 @@
         this.$win = $('#' + _id)
                     .width(opts.width)
                     .css({'margin-left': opts.width/-2, 'top' : opts.top});
+        
         // 窗口内容区域
         this.$cont = this.$win.find('.fr_content');
         // 事件绑定
         this.$win.on('click', '.close,.cancel', function(e) {
-            _this.close();
+            _this.close(opts.onclose);
         });
-        this.$win.on('click', '.sure', function(e){
+        this.$win.on('click', '.sure', function(e) {
             opts.onok(_this.$cont)&&_this.close();
         });
     }
@@ -45,7 +43,6 @@
             this.$cont.html(html);
             this.$win.removeClass('dsn');
             fn&&this.opened===undefined&&fn(this.$cont);
-            opts.onopen(this.$cont);
 
             // 窗口已经打开 
             this.opened = true;
@@ -54,8 +51,6 @@
         'close' : function(fn) {
             this.$win.addClass('dsn');
             fn&&fn(this.$cont);
-            opts.onclose(this.$cont);
-
             this.opened = false;
         }
     });
