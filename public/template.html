@@ -4,7 +4,7 @@
       <%if(fList.length > 0 ) { _.each(fList, function(e,i,o){ %>
           <li data-id="<%=e._id%>">
               <img src="<%=e.head%>" data-status="<%=e.status%>" class="<%=e.status===1?'':'offline'%>"/>
-              <p><%=e.nickname%></p>
+              <p><%=e.nickname%><%=e.status===1?'':'[离线]'%></p>
               <p class="signover" title="<%=e.signtrue%>"><%=e.signtrue%></p>
               <strong class="msg_tip dsn" id="T<%=e._id%>"></strong>
           </li>

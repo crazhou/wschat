@@ -33,7 +33,7 @@ function cropImagepng($fileName, $sizeString, $targetFilename) {
         // 目标文件
         $target = imagecreatetruecolor($targetSize[0], $targetSize[1]);
         // 得到白色
-        $white = imagecolorallocate($target , 0, 0, 0);
+        $white = imagecolorallocate($target , 255, 255, 255);
         // 填充白色
         imagefill($target, 0, 0, $white);
 

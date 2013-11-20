@@ -5,10 +5,11 @@ $(function(J) {
 
     // 主面板拖动
     var mainboard = new Drag('fList', 'fList_h'),
-        wshost    = 'ws://192.168.5.100:8007';
+    // 配置WebSocket 服务器 
+        wshost    = 'ws://iqsz-d0312:8007';
 
     /*
-     * 获取主面板初始位置
+     * 从设置中获取主面板初始位置
      */
     function getMainCoor() {
       var im = {
@@ -171,6 +172,7 @@ $(function(J) {
       * @fn callback (base64编码)
       */
      function readImg(file, fn) {
+        // 选择文件时取消
         if(file === undefined) {
           return false;
         }
@@ -487,7 +489,7 @@ $(function(J) {
           }, 1500);
     });
 
-    // 两个窗口, 和文件对象, tab标记
+    // 两个窗口, 和文件对象, tab标记, 裁剪
     var win1, win2, fileObj, tabFlag = 0;
 
 
@@ -536,7 +538,7 @@ $(function(J) {
                 }
           },
           'error' : function(jqXHR, textStatus, error) {
-            console.log('请求发生错误 : textStatus : %s Error : %s', textStatus, error);
+              notify('头像上传失败！');
           }
         });
     }
@@ -636,7 +638,8 @@ $(function(J) {
                       img = imgSize(file, function(url, obj) {
                           if(obj.width === 100 && obj.height === 100) {
                               img_preview.attr('src', url);
-                              $('#coor_hidden').val('0|0|100|100');
+                              $('#coor_hidden').val('no');
+                              img_inner.html('');
                               notify('图片为标准尺寸，无需裁剪');
                               fileObj = file;
                               return false;

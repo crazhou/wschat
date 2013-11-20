@@ -1,6 +1,7 @@
 var express = require('express'),
     _       = require('underscore'),
     fs      = require('fs'),
+    path    = require('path'),
     ws      = require('./ws'),
     db      = require('./mongo'),
     crop    = require('./crop');
@@ -108,7 +109,7 @@ app.post('/update_user', function(req, res) {
 });
 
 // 更新用户头像
-app.post('/update_avtar', function(req, res){
+app.post('/update_avtar', function(req, res) {
     var input = req.body,
         head  = input.head;
     if(req.xhr) {
@@ -125,24 +126,43 @@ app.post('/update_avtar', function(req, res){
 // 上传头像
 app.post('/upload_avtar', function(req, res) {
     var file = req.files.avtar,
-        body = req.body;
-
-    // 裁剪图片
-    crop.cropImg(file.path, body.coor, _.uniqueId('head_'), function(data) {
-        if(data.success) {
-            // 移动文件
-            fs.renameSync(data.fileName, __dirname + '/public/images/head/' + data.fileName);
-            // 更新用户头像
-            db.updateUser(body.ip, {head :data.fileName}, function(resp) {
-                if(resp) {
-                    res.send({'success': data});
-                    ws.updateDB();
-                }
-            });
-        } else {
-            res.send(data);
-        }
-    });
+        body = req.body,
+        // 目标目录
+        basePath = __dirname + '/public/images/head/',
+        // 图片扩展名
+        extName  = path.extname(file.name),
+        // 新的文件名
+        tmpName = Math.random().toString();
+    // 不用裁剪
+    if(body.coor === 'no') {
+        // 移动文件
+        fs.renameSync(file.path, basePath +  tmpName + extName);
+        // 更新用户头像
+        db.updateUser(body.ip, {head : tmpName + extName}, function(resp) {
+            if(resp) {
+                res.send({'success': resp});
+                ws.updateDB();
+            }
+        });
+        
+    } else {
+        // 裁剪图片
+        crop.cropImg(file.path, body.coor, tmpName, function(data) {
+            if(data.success) {
+                // 移动文件
+                fs.renameSync(data.fileName,  basePath + data.fileName);
+                // 更新用户头像
+                db.updateUser(body.ip, {head :data.fileName}, function(resp) {
+                    if(resp) {
+                        res.send({'success': data});
+                        ws.updateDB();
+                    }
+                });
+            } else {
+                res.send(data);
+            }
+        });
+    }
 });
 
 
