@@ -6,7 +6,7 @@
               <img src="<%=e.head%>" data-status="<%=e.status%>" class="<%=e.status===1?'':'offline'%>"/>
               <p><%=e.nickname%><%=e.status===1?'':'[离线]'%></p>
               <p class="signover" title="<%=e.signtrue%>"><%=e.signtrue%></p>
-              <strong class="msg_tip dsn" id="T<%=e._id%>"></strong>
+              <strong class="msg_tip <%=(e.count&&e.count)>0?'':'dsn'%>" id="T<%=e._id%>"><%=(e.count&&e.count)%></strong>
           </li>
           <%})}%>
       </ul>

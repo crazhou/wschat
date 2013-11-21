@@ -31,7 +31,7 @@ app.set('views', __dirname + '/views');
 app.use(express.bodyParser({ keepExtensions: true, uploadDir: 'D:/NewWorks/tmp' }));
 
 // 日志记录器
-app.use(express.logger());
+// app.use(express.logger());
 
 app.get('/', function(req, res) {
     var ip = req.ip;

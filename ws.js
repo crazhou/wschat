@@ -1,13 +1,14 @@
 var WebSocket = require('ws').Server,
     wss  = new WebSocket({port:8007}, function () {
         console.log('WebSocket Server has running on port %d', 8007);
-    }), 
+    }),
     _   = require('underscore'),
     util = require('util'),
     db   = require('./mongo');
 
 var Clients = {},
-    Allclients = [];
+    Allclients = [],
+    TT = {};
 
 // 获取全部用户
 var updateDB = exports.updateDB = function () {
@@ -61,13 +62,28 @@ var Actions = {
         // 给客户添加属性
         _.extend(client ,mess.userInfo);
 
-        // 添加 到 Clients 对象中
-        Clients[client._id] = client;
+        // 防止窗口多开 
+        var id = client._id;
+        if(id in Clients) {
+            delete client._id;
+            return this.send(client, 'server', '一个IP不能开启多个聊天窗口！', 'cmd', {
+                close: true
+            });
+        } else {
+            Clients[id] = client;
+        }
+        
+        if( id in TT) {
 
-        // 给其用户广播消息
-        this.boardcast(client, mess.nickname + '， 上线了！', 'cmd', {
-            fList : this.getClientList()
-        });
+            TT[id] && clearTimeout(TT[id]);
+            delete TT[id];
+
+        } else {
+            // 给其用户广播消息
+            this.boardcast(client, mess.nickname + '， 上线了！', 'cmd', {
+                fList : this.getClientList()
+            });
+        }
 
         // 给自己推送列表
         this.send(client, 'server', '连接成功，加载中...', 'cmd', {
@@ -81,10 +97,13 @@ var Actions = {
      */
     left : function(id, nickname) {
         delete Clients[id];
-        // 广播消息
-        this.boardcast('server', nickname + '，下线了！', 'cmd', {
-            fList : this.getClientList()
-        });
+        var _this = this;
+            TT[id] = setTimeout(function() {
+                _this.boardcast('server', nickname + '，下线了！', 'cmd', {
+                    fList : _this.getClientList()
+                });
+                (id in TT) && clearTimeout(TT[id]); delete TT[id];
+            }, 1000);
     },
 
     /*
@@ -198,10 +217,10 @@ wss.on('connection', function(ws) {
 
     // 客户丢失
     ws.on('close', function(e) {
-
-        Actions.left(this._id, this.nickname);
-                
-        this.terminate();
+        if(this._id) {
+            Actions.left(this._id, this.nickname);     
+            this.terminate();
+        }
     });
 
 });

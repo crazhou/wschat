@@ -32,11 +32,12 @@ $(function(J) {
       * @t 停留时间，默认3秒, 传0为常驻提醒 
       */
      function notify(msg, t) {
+
         var noti = $('.notify');
         if(t === 0) {
             return noti.html(msg).show();
         }
-        var t = t||3;
+        var t = t||1;
         noti.html(msg)
             .show()
             .delay(t*1000)
@@ -109,15 +110,25 @@ $(function(J) {
                 signtrue: '这里发送的消息，所有人都可见！',
                 status : 1
             });
+            // 组消息
+            if(winList['group001'] && !winList['group001'].open) {
+              tmp[0].count = winList['group001'].count;
+            }
             // 加入群组
             ChatObj.fList[tmp[0]._id] = tmp[0]; 
         }
+
         // 过滤自己
         _.each(data.fList, function(e,i,o) {
-            if(e._id !== Current_user._id) {
+            var id = e._id;
+            if(id !== Current_user._id) {
+                // 消息计数器保留
+                if(winList[id] && !winList[id].open) {
+                  e.count = winList[id].count;
+                }
                 tmp.push(e);
                 // 加入共享List
-                ChatObj.fList[e._id] = e;
+                ChatObj.fList[id] = e;
             }
         });
 
@@ -287,10 +298,13 @@ $(function(J) {
         // 收到消息
         handle.onmessage = function(e) {
             var data = JSON.parse(e.data);
+
             // 更新用户列表
             if(data.type === 'cmd') {
-                notify(data.content);
                 data.fList && renderFlist(data);
+                if(data.content !== '' && !data.close)
+                  notify(data.content);
+                data.close && notify(data.content, 0);
             }
 
             // 收到用户消息
