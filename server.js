@@ -176,4 +176,4 @@ function Process_data(data) {
 
 app.use(express.static(__dirname + '/public'));
 
-app.listen(80);
+app.listen(80, '0.0.0.0');

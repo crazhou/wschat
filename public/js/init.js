@@ -6,7 +6,7 @@ $(function(J) {
     // 主面板拖动
     var mainboard = new Drag('fList', 'fList_h'),
     // 配置WebSocket 服务器 
-        wshost    = 'ws://iqsz-d0312:8007';
+        wshost    = 'ws://192.168.5.100:8007';
 
     /*
      * 从设置中获取主面板初始位置

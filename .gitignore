@@ -1,2 +1,3 @@
 node_modules/
-public/images/head
+public/images/head/
+mongo.js
