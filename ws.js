@@ -194,11 +194,8 @@ wss.on('connection', function(ws) {
                 Actions.boardcast(author, obj.content, obj.type, {
                     'showIn' : obj.to //决定显示在哪个窗口
                 });
-            
             } else {
-
                 Actions.send(target, author, obj.content, obj.type);
-            
             }
 
             
@@ -209,7 +206,8 @@ wss.on('connection', function(ws) {
 
             // 给发送者发消息
             Actions.send(author, author, obj.content, obj.type, {
-                'showIn' : obj.to // 决定显示在哪个窗口
+                'showIn' : obj.to, // 决定显示在哪个窗口
+                'is_self' : true
             });
         }
 

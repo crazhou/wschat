@@ -64,18 +64,46 @@
   */
  (function(w){
 
-    var NO = function (icon, title, content) {
-        var _instance = new Notification(title, {
-            body : content, 
-            icon : icon
-        });
+    w.addEventListener('load', function () {
+
+        console.log('Called !');
+      Notification.requestPermission(function (status) {
+        // This allows to use Notification.permission with Chrome/Safari
+
+        console.log('status : %s', status);
+        if (Notification.permission !== status) {
+          Notification.permission = status;
+        }
+      });
+    });
+
+    var NO = function () {
+
+        var _instance = false,
+            _permission = false;
+
+        this.show = function (icon, title, content) {
+
+
+            console.log('Called!')
+            this.request(function(permission) {
+                _permission = permission;
+
+                console.log('Permission : %s', permission);
+                if(permission === 'granted')
+                 _instance = new Notification(title, {
+                        body : content, 
+                        icon : icon
+                });
+            });
+        };
 
         this.close =  function() {
             _instance.close();
         };
     };
 
-    _.extend(NO, {
+    _.extend(NO.prototype, {
         'isSupport' : function() {
             return 'Notification' in window;
         },
@@ -85,5 +113,5 @@
         
     });
 
-    w.Notify = NO;
+    w.Notify = new NO();
 })(this);

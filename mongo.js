@@ -6,7 +6,9 @@ var mongodb     = require('mongodb'),
 var config = {
   host : 'localhost',
   dbname : 'chatdb',
-  port : 27017
+  port : 27007,
+  username : 'root',
+  password : '10000'
 };
 
   function SimDb() {
@@ -14,7 +16,7 @@ var config = {
         // 获取数据库连接
         getDB = function (fn) {
           MongoClient.connect(
-              _.template('mongodb://<%=host%>:<%=port%>/<%=dbname%>',config),
+              _.template('mongodb://<%=username%>:<%=password%>@<%=host%>:<%=port%>/<%=dbname%>',config),
               function(err, db) {
                 if(err) throw err;
                 DB = db;

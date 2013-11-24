@@ -19,7 +19,7 @@ app.engine('html', function(fileName, options, fn) {
     });
 });
 // 开启模板缓存
-// app.enable('view cache');
+app.enable('view cache');
 
 // 默认引擎
 app.set('view engine', 'html');
@@ -28,7 +28,10 @@ app.set('view engine', 'html');
 app.set('views', __dirname + '/views');
 
 // body parse 中间件
-app.use(express.bodyParser({ keepExtensions: true, uploadDir: 'D:/NewWorks/tmp' }));
+app.use(express.bodyParser({ keepExtensions: true, uploadDir: 'E:/wamp/upload' }));
+
+// gzip 压缩
+app.use(express.compress());
 
 // 日志记录器
 // app.use(express.logger());
@@ -56,13 +59,13 @@ app.post('/join_room', function(req, res) {
     });
 
     // 防止重复插入
-    db.findByIP(ip, function(result){
+    db.findByIP(ip, function(result) {
         if(result.length > 0) {
-            res.render('board', Process_data(result[0]));
+            res.send({'success' : false, 'msg' :'用户已存在！'});
         } else {
            db.addUser(input, function(data) {
                 ws.updateDB();
-                res.render('board', Process_data(data[0]));
+                res.send({'success' : true});
             });
         }
     });
@@ -176,4 +179,4 @@ function Process_data(data) {
 
 app.use(express.static(__dirname + '/public'));
 
-app.listen(80, '0.0.0.0');
+app.listen(80);

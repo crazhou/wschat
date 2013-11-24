@@ -3,10 +3,15 @@ $(function(J) {
         return alert('抱歉，您的浏览器不支持WebSocket!');
     }
 
+    // 配置项目
+    var Config = {
+      'wshost' : '192.168.5.100:8007', // 请设置为局域网IP
+      'allowExt' : 'jpg|jpeg|png|gif'.split('|'), // 允许的文件类型
+      'maxImgsize' : 1 // 最大图片限制 单位为MB
+    };
+
     // 主面板拖动
-    var mainboard = new Drag('fList', 'fList_h'),
-    // 配置WebSocket 服务器 
-        wshost    = 'ws://192.168.5.100:8007';
+    var mainboard = new Drag('fList', 'fList_h');
 
     /*
      * 从设置中获取主面板初始位置
@@ -29,7 +34,7 @@ $(function(J) {
 
      /* 黑色提示
       * @msg 消息正文
-      * @t 停留时间，默认3秒, 传0为常驻提醒 
+      * @t 停留时间，默认1秒, 传0为常驻提醒 
       */
      function notify(msg, t) {
 
@@ -65,10 +70,10 @@ $(function(J) {
       }, 
 
       'stop' : function() {
-        if(typeof this.TT === 'number') {
+        if('TT' in this) {
             clearInterval(this.TT);
             document.title = this.oldtitle;
-            this.TT = false;
+            delete this.TT
         }
       },
 
@@ -188,18 +193,17 @@ $(function(J) {
           return false;
         }
         var ext = file.name.split('.').pop().toLowerCase();
-        if(_.indexOf(['jpg','jpeg','png','gif'], ext) < 0) {
+        if(_.indexOf(Config.allowExt, ext) < 0) {
             return notify('非法的文件类型，请选择图片!');
         }
-        if(file.size/1024 > 1024) {
-            return notify('文件过大，请选择小于1M的图片！');
+        if(file.size/1024 > 1024 * Config.maxImgsize) {
+            return notify('文件过大，请选择小于' + Config.maxImgsize + 'M的图片！');
         }
         var reader = new FileReader();
         reader.readAsDataURL(file);
         reader.onloadend = function() {
             fn && fn(this.result);
         }
-
         return file;
      }
      /* 获取图片尺寸
@@ -215,7 +219,6 @@ $(function(J) {
                 img.onload = function() {
                   fn&&fn(url, {width : this.width, height : this.height});
                 };
-
                 return img;
         } else {
           throw Error('window.URL对象不存在！');
@@ -226,7 +229,11 @@ $(function(J) {
       */
       function matchUrl(s) {
         var reg = /[^>]?(https?:\/\/[\w_\/\.\-\?\#\=]+)/gm;
-        return s.replace(reg, function(a, b){return '<a href="'+b+'" target="_blank">'+b+'</a>'})
+        return s.replace(reg, function(a, b){return '<a href="'+b+'" target="_blank">'+b+'</a>'});
+      }
+
+      function unEscape(a) {
+        return _.unescape(a.replace(/<\/br>/g, "\n").replace(/&nbsp;/g, ' '));
       }
 
      /*
@@ -236,6 +243,7 @@ $(function(J) {
       */
      function getMsgList(to, from) {
         var from = from || ChatObj.user._id;
+        notify('正在加载聊天记录...');
         $.post('/query_msg', {
             from : from,
             to : to
@@ -258,8 +266,7 @@ $(function(J) {
         mess_cb : $.noop, // 收到消息的回调
         
         close_cb : function() { // 连接中断的回调
-            this.is_ok = false
-            notify('连接已中断，请尝试刷新！', 0);
+            this.is_ok = false;
         },
 
         renderMsg : false, // 渲染消息函数
@@ -286,13 +293,36 @@ $(function(J) {
         }
      };
 
-    (function(C) {
+    // 重连管理 
+    var Rcont = {
+      count : 5, // 重试次数5次
+      interval :  5000, // 时间间隔毫秒数
+      clear : function (reset) { // 清除定时器
+        ('TT' in this) && clearInterval(this.TT);
+        delete this.TT;
+        if(reset) this.count = 5;
+      }
+    };
 
+    var initWs = function(C, flag) {
          // 建立WebSocket 连接 
-        var handle = new WebSocket(wshost);
+        var handle = new WebSocket('ws://' + Config.wshost);
 
         handle.onclose = function() {
             C.close_cb();
+            if(flag) {
+              Rcont.count--;
+              if(!Rcont.count) {
+                 Rcont.clear();
+                return notify('重连失败，请稍候再试！', 0);
+              }
+            }
+
+            notify('连接已中断，正在重新连接...',0);
+            // 断线重连
+            Rcont.clear();
+            // 开始重连
+            Rcont.TT = setInterval(initWs, Rcont.interval , ChatObj, true);
         };
 
         // 收到消息
@@ -310,16 +340,15 @@ $(function(J) {
             // 收到用户消息
             if(_.indexOf(['text','img'], data.type) > -1) {
 
-                Titletip.start(data.nickname +'，来消息了。。。');
+                var id = data.showIn ? data.showIn : data.from;
 
-                if(data.showIn) {
-                    // 来自己或群
-                    var id = data.showIn;
-                    data.is_self = true;
-                } else {
-                    // 来自他人
-                    var id = data.from;
-                    data.is_self = false;
+                // 桌面提醒
+                if(!data.is_self) {
+                  var _icon = ChatObj.fList[id].head,
+                      _msg = ChatObj.fList[id].nickname + '，来消息了  ',
+                      _content  =  data.type === 'img' ? '[图片]' : data.content;
+                      Notify.show(_icon , _msg , unEscape(_content));
+                      Titletip.start(_msg);
                 }
 
                 // 处理网址
@@ -328,12 +357,9 @@ $(function(J) {
                 if(winList[id] && winList[id].open) {
                     // 渲染消息
                     winList[id].renderMsg([data]);
-
                 } else {
-                    // 未读消息记数器
-                    if(!data.is_self || !id.indexOf('group')) {
-                        MsgTips(id);
-                    }
+                        // 未读消息记数器
+                        !data.is_self&&MsgTips(id);
                 }
             }
         };
@@ -341,6 +367,8 @@ $(function(J) {
         // 连接成功
         handle.onopen = function(e) {
             if(this.readyState === this.OPEN) {
+                // 清除，并重置定时器
+                Rcont.clear(true);
                 // 上送当前用户信息
                 C.send(false, 'join', 'cmd', {
                     userInfo : C.user
@@ -369,7 +397,9 @@ $(function(J) {
             handle.send(JSON.stringify(data));
         };
 
-     })(ChatObj);
+     };
+
+     initWs(ChatObj);
 
      // 决定窗口打开的位置
      var deviWin = function() {
@@ -401,7 +431,7 @@ $(function(J) {
      var winList = {};
 
      // 打开聊天窗口
-     $('#fList_list').on('dblclick', 'li', function(e) {
+     $('#fList_list').on('click', 'li', function(e) {
             var t = $(this),
                 id = t.attr('data-id');
 
@@ -474,7 +504,7 @@ $(function(J) {
                         win.find('.up').on('click', function(e) {
                             $('#upload_hidden').click().off('change').on('change', function(e){
                                 readImg(this.files[0], function(result) {
-                                    ChatObj.send(id, result, 'img')
+                                    ChatObj.send(id, result, 'img');
                                 });
                             });
                         });
@@ -503,7 +533,7 @@ $(function(J) {
           }, 1500);
     });
 
-    // 两个窗口, 和文件对象, tab标记, 裁剪
+    // 两个窗口, 和文件对象, tab标记;
     var win1, win2, fileObj, tabFlag = 0;
 
 
@@ -598,7 +628,7 @@ $(function(J) {
                   }
                   // 直接设置头像
                   if( headimg.length > 0) {
-                      update_avtar({head: headimg, ip: ChatObj.user.ip}, function(){
+                      update_avtar({head: headimg, ip: ChatObj.user.ip}, function() {
                         close_reload(win2);
                       });
                   }
@@ -726,4 +756,8 @@ $(function(J) {
         this.setSelect([0,0,100,100]);
       });
     }
+
+    $('.start_chat').on('click', function(){
+      Notify.show('/images/head/icon.png',' 群聊广场，来消息了 ','da ');
+    });
 });
