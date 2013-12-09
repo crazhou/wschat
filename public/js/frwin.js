@@ -63,10 +63,10 @@
   * 桌面通知类
   */
  (function(w){
-
+    /*
     w.addEventListener('load', function () {
 
-        console.log('Called !');
+      console.log('Called !');
       Notification.requestPermission(function (status) {
         // This allows to use Notification.permission with Chrome/Safari
 
@@ -76,6 +76,7 @@
         }
       });
     });
+    */
 
     var NO = function () {
 
@@ -83,18 +84,18 @@
             _permission = false;
 
         this.show = function (icon, title, content) {
-
-
-            console.log('Called!')
+            var _this = this;
             this.request(function(permission) {
                 _permission = permission;
-
-                console.log('Permission : %s', permission);
                 if(permission === 'granted')
                  _instance = new Notification(title, {
                         body : content, 
                         icon : icon
                 });
+
+                setTimeout(function() {
+                    _this.close();
+                }, 5000);
             });
         };
 

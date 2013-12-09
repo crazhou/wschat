@@ -122,7 +122,20 @@ var config = {
                     closeDB();
                 });
           });
-        }
+        };
+
+        // 读取图片消息
+        this.getImg = function(fn) {
+          getDB(function(db){
+              db.collection('messages')
+                .find({type : 'img'}, {'content' :1})
+                .toArray(function(err, result){
+                  if(err) throw err;
+                  fn(result);
+                  closeDB();
+                });
+          });
+        };
 
     }
 

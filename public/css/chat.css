@@ -28,8 +28,7 @@ body {
     color: #333;
     font-size: 12px;
     font-family: 'Microsoft Yahei';
-    background : url('../images/blue_glow.jpg') no-repeat 0 0;
-    background-size: cover;
+    background : url('../images/php_bg.jpg') repeat 0 0;
     overflow: hidden;
 }
 a{
@@ -425,5 +424,5 @@ ul,li {
 }
 .img_tips{
   text-align: center;
-  margin-top: 240px;
+  margin-top: 200px;
 }

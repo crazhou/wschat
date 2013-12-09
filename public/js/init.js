@@ -7,7 +7,7 @@ $(function(J) {
     var Config = {
       'wshost' : '192.168.5.100:8007', // 请设置为局域网IP
       'allowExt' : 'jpg|jpeg|png|gif'.split('|'), // 允许的文件类型
-      'maxImgsize' : 1 // 最大图片限制 单位为MB
+      'maxImgsize' : 4 // 最大图片限制 单位为MB
     };
 
     // 主面板拖动
@@ -159,10 +159,31 @@ $(function(J) {
      *@m 为当前窗口Ul
      */ 
     function MsgScroll(m) {
-        var par = m.parent(),
-            hei = m.height();
-            if(hei>320) {
-                par.animate({scrollTop: hei}, 300);
+        var par = m.parent();
+
+            // 加载图片
+            var init = 0;
+            var size = m.find('img').each(function(e) {
+              var t = $(this),
+                  src = t.attr('data-src');
+
+              var img = new Image();
+                  img.src = src;
+                  img.onload = function(e) {
+                    init++;
+                    t.attr({'src': src, 'alt' : '加载完成'});
+                    img.onload = null;
+                    (init === size)&&(function(h) {
+                        console.log('height : %d', h);
+                        if(h>320) {
+                          par.animate({scrollTop: h}, 300)
+                        }
+                      })(m.height());
+                  };
+            }).size();
+
+            if(size < 1) {
+              (function(h){(h>320)&&par.animate({scrollTop: h}, 300)})(m.height());
             }
      }
 
@@ -180,12 +201,13 @@ $(function(J) {
         }
         var m = tmp.count;
         $('#T' + id).html(m).show();
-     };
+     }
 
      /* 
       * readImg 读取图片
       * @file 文件对象
       * @fn callback (base64编码)
+      * @return file Object;
       */
      function readImg(file, fn) {
         // 选择文件时取消
@@ -199,13 +221,31 @@ $(function(J) {
         if(file.size/1024 > 1024 * Config.maxImgsize) {
             return notify('文件过大，请选择小于' + Config.maxImgsize + 'M的图片！');
         }
-        var reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onloadend = function() {
-            fn && fn(this.result);
+        if(fn) {
+          var data = new FormData();
+          data.append('chatImg', file);
+
+          $.ajax('/upchatImg', {
+            'type' : 'POST', 
+            'data' : data,
+            'timeout' : 5000,
+            'contentType' : false,
+            'processData' : false, 
+            'dataType' :'json',
+            'success' : function(data, statusText) {
+                if(data.success) {
+                  fn(data.fileName);
+                }
+            },
+            'error' : function(jqXHR, textStatus, error) {
+                notify('图片上传失败！');
+            }
+          });
         }
+
         return file;
      }
+
      /* 获取图片尺寸
       * @file 文件对象
       * @fn callback (url, {with: xx, height: xx})
@@ -228,7 +268,7 @@ $(function(J) {
       * content
       */
       function matchUrl(s) {
-        var reg = /[^>]?(https?:\/\/[\w_\/\.\-\?\#\=]+)/gm;
+        var reg = /[^>]?(https?:\/\/\S+)/gm;
         return s.replace(reg, function(a, b){return '<a href="'+b+'" target="_blank">'+b+'</a>'});
       }
 
@@ -242,7 +282,8 @@ $(function(J) {
       * from 默认为自己;
       */
      function getMsgList(to, from) {
-        var from = from || ChatObj.user._id;
+        var from = from || ChatObj.user._id,
+            id = ChatObj.user._id;
         notify('正在加载聊天记录...');
         $.post('/query_msg', {
             from : from,
@@ -250,7 +291,7 @@ $(function(J) {
         }, function(data) {
             $.each(data, function(i,e) {
                 e.time = getTime(e.time);
-                e.is_self = to!==e.from;
+                e.is_self = e.from===id;
                 e.content = matchUrl(e.content);
             });
             winList[to].renderMsg(data);
@@ -304,6 +345,11 @@ $(function(J) {
       }
     };
 
+    /*
+     * 连接管理器
+     * ChatObj 聊天主对象
+     * flag 重连标记
+     */
     var initWs = function(C, flag) {
          // 建立WebSocket 连接 
         var handle = new WebSocket('ws://' + Config.wshost);
@@ -428,7 +474,22 @@ $(function(J) {
      };
 
      // 本地维护,好友列表对象 
-     var winList = {};
+     var winList = {},
+
+        SendMsg = function (id, t) {
+          var v = _.escape($.trim(t.val()));
+
+          if(v === '') {
+            return notify('消息内容不能为空');
+          }
+          if(v.length > 500) {
+            return notify('消息过长，请分次发送')
+          }
+          
+          ChatObj.send(id, v, 'text');
+          
+          t.val('');
+        };
 
      // 打开聊天窗口
      $('#fList_list').on('click', 'li', function(e) {
@@ -471,13 +532,7 @@ $(function(J) {
                         var input = win.find('.readySend').keydown(function(e) {
                             if(ChatObj.KeyDevide(e)) {
                                 e.preventDefault();
-                                var t = $(this),
-                                    v = _.escape($.trim(t.val()));
-                                if(v==='') {
-                                    return notify('消息内容不能为空');
-                                }
-                                ChatObj.send(id, v, 'text');
-                                t.val('');
+                                SendMsg(id, input);
                             }
                         });
 
@@ -489,12 +544,7 @@ $(function(J) {
 
                         // 按钮发送
                         win.find('.sendBtn').on('click', function(e) {
-                            var v = _.escape($.trim(input.val()));
-                            if(v==='') {
-                                return notify('消息内容不能为空');
-                            }
-                            ChatObj.send(id, v, 'text');
-                            input.val('');
+                              SendMsg(id, input);
                         });
                         // 清除内容
                         win.find('.omg').on('click', function(e) {
@@ -652,6 +702,7 @@ $(function(J) {
     // 修改昵称，签名和设置
     $('.settings').on('click', function(e) {
           var cont = ChatObj.renderSettings(ChatObj.user);
+          // 打开窗口1
           win1.open(cont);
     });
 
@@ -660,6 +711,7 @@ $(function(J) {
           // 窗口内容
           var cont = ChatObj.renderUpload(ChatObj.user);
 
+          // 打开窗口2
           win2.open(cont, function(w) {
             // 选项卡
             var input_hidden = $('#upload_hidden'),
@@ -672,12 +724,15 @@ $(function(J) {
                     img_tips = w.find('.img_tips');
 
                 tabs.addClass('dsn').eq(1-index).removeClass('dsn');
+
+                // 文件上传标签
                 if(index) {
                   head_hidden.val('');
                   input_hidden
                   .off('change')
                   .click()
                   .on('change', function(e) {
+                      // 限制文件大小与格式
                       var file = readImg(this.files[0]),
                       img = imgSize(file, function(url, obj) {
                           if(obj.width === 100 && obj.height === 100) {
@@ -756,8 +811,4 @@ $(function(J) {
         this.setSelect([0,0,100,100]);
       });
     }
-
-    $('.start_chat').on('click', function(){
-      Notify.show('/images/head/icon.png',' 群聊广场，来消息了 ','da ');
-    });
 });

@@ -9,7 +9,6 @@ $targetSize = array(100, 100);
 
 // 获取文件扩展名
 function extName($file) {
-
     return strtolower(pathinfo($file, PATHINFO_EXTENSION));
 }
 

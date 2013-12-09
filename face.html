@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>QQ表情</title>
+    <style type="text/css">
+    html,body,img,div,p{
+        margin: 0;
+        padding: 0;
+    }
+    img{
+        border: none;
+    }
+    .face{
+        width: 500px;
+        margin : 10px auto;
+    }
+    </style>
+</head>
+<body>
+    <div class="face" id="face01"></div>
+    <script type="text/javascript">
+    (function(w,u) {
+        var d = w.document,
+            
+            $ = function(a) {
+                return d.getElementById(a);
+            },
+
+            baseURL = 'http://1.web.qstatic.com/webqqpic/style/face/',
+
+            fragment = document.createDocumentFragment();
+
+            for(var i = 0;i<=104;i++) {
+                var img = new Image();
+                img.src = baseURL + i + '.gif';
+
+                fragment.appendChild(img);
+            }
+
+            $('face01').appendChild(fragment);
+
+
+                
+    })(window);
+    </script>
+</body>
+</html>

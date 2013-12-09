@@ -55,7 +55,7 @@
   <%if(e.type ==='text'){%>
     <%=e.content%>
   <% } else {%>
-    <img src="<%=e.content%>">
+    <img data-src="<%=e.content%>" src="/images/loading_32.gif" alt="图片加载中..."/>
   <%}%></span>
   </li>
   <%})%>

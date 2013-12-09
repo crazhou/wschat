@@ -126,7 +126,26 @@ app.post('/update_avtar', function(req, res) {
 
 });
 
-// 上传头像
+// 上传新的头像
+app.post('/upchatImg', function(req, res) {
+
+    var file = req.files.chatImg,
+        // 目标目录
+        basePath = __dirname + '/public/chatData/',
+        // 图片扩展名
+        extName = path.extname(file.name),
+        // 新文件名
+        tmpName = Math.random().toString();
+
+        // 移动文件
+        fs.rename(file.path, basePath +  tmpName + extName, function(err) {
+            if(err) throw err;
+            res.send({'success' : true, fileName : '/chatData/' +tmpName + extName});
+        });
+});
+
+
+// 上传头像,裁剪，更新头像
 app.post('/upload_avtar', function(req, res) {
     var file = req.files.avtar,
         body = req.body,
@@ -177,6 +196,7 @@ function Process_data(data) {
     return data;
 }
 
-app.use(express.static(__dirname + '/public'));
+var oneday = 86400;
+app.use(express.static(__dirname + '/public', {maxAge: oneday}));
 
 app.listen(80);

@@ -46,7 +46,7 @@ $(document).ready(function(J){
             $.post('/join_room', data, function(resp){
                 if(resp.success) {
                     location.reload();
-                } else{
+                } else {
                     alert(resp.msg);
                 }
             },'json');
