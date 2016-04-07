@@ -4,7 +4,7 @@ var mongodb     = require('mongodb'),
 
 // 数据库配置 
 var config = {
-  host : 'localhost',
+  host : '127.0.0.1',
   dbname : 'chatdb',
   port : 27007,
   username : 'root',
