@@ -16,7 +16,7 @@ var config = {
         // 获取数据库连接
         getDB = function (fn) {
           MongoClient.connect(
-              _.template('mongodb://<%=username%>:<%=password%>@<%=host%>:<%=port%>/<%=dbname%>',config),
+              _.template('mongodb://<%=host%>:<%=port%>/<%=dbname%>',config),
               function(err, db) {
                 if(err) throw err;
                 DB = db;

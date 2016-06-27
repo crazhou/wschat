@@ -36,6 +36,8 @@ app.set('views', __dirname + '/views');
 
 app.get('/', function(req, res) {
     var ip = req.ip;
+
+    console.log('IP:', ip)
     db.findByIP(ip, function(result) {
         if(result.length > 0) {
             res.render('board', Process_data(result[0]));

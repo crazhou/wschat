@@ -5,7 +5,7 @@ $(function(J) {
 
     // 配置项目
     var Config = {
-      'wshost' : 'hk.tiankongyiji.com:8007', // 请设置为局域网IP
+      'wshost' : 'hk.dnswhy.cn:8007', // 请设置为局域网IP
       'allowExt' : 'jpg|jpeg|png|gif'.split('|'), // 允许的文件类型
       'maxImgsize' : 4 // 最大图片限制 单位为MB
     };
